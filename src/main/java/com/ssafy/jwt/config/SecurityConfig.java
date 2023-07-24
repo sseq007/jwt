@@ -1,7 +1,9 @@
 package com.ssafy.jwt.config;
 
 import com.ssafy.jwt.config.jwt.JwtAuthenticationFilter;
+import com.ssafy.jwt.config.jwt.JwtAuthorizationFilter;
 import com.ssafy.jwt.filter.MyFilter3;
+import com.ssafy.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
@@ -23,13 +25,15 @@ public class SecurityConfig {
 
 //    private final CorsFilter corsFilter;
 
+    private final UserRepository userRepository;
+
     private final CorsConfig corsConfig;
 
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
+//        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
         http.csrf().disable();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -57,8 +61,8 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
                     .addFilter(corsConfig.corsFilter())
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager));
-//                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
         }
     }
 
